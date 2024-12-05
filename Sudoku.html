@@ -44,16 +44,12 @@
     <script>
         const grid = document.getElementById('grid');
         const cells = [];
-
-        // Initialize 9x9 grid
         for (let r = 0; r < 9; r++) {
             cells[r] = [];
             for (let c = 0; c < 9; c++) {
                 const cell = document.createElement('input');
                 cell.type = 'text';
                 cell.maxLength = 1;
-
-                // Allow only numbers 1-9
                 cell.addEventListener('input', (e) => {
                     if (!/^[1-9]$/.test(e.target.value)) {
                         e.target.value = '';
