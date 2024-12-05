@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku Solver</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #grid {
+            display: grid;
+            grid-template-columns: repeat(9, 40px);
+            grid-gap: 2px;
+        }
+        input {
+            width: 38px;
+            height: 38px;
+            text-align: center;
+            font-size: 18px;
+            border: 1px solid #ccc;
+        }
+        input.filled {
+            color: blue;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Sudoku Solver</h1>
+    <div id="grid"></div>
+    <button id="solveButton">Solve</button>
+    <script>
+        const grid = document.getElementById('grid');
+        const cells = [];
+
+        // Initialize 9x9 grid
+        for (let r = 0; r < 9; r++) {
+            cells[r] = [];
+            for (let c = 0; c < 9; c++) {
+                const cell = document.createElement('input');
+                cell.type = 'text';
+                cell.maxLength = 1;
+
+                // Allow only numbers 1-9
+                cell.addEventListener('input', (e) => {
+                    if (!/^[1-9]$/.test(e.target.value)) {
+                        e.target.value = '';
+                    }
+                });
+
+                cells[r][c] = cell;
+                grid.appendChild(cell);
+            }
+        }
+
+        document.getElementById('solveButton').addEventListener('click', () => {
+            const board = [];
+            if (!extractNumbers(cells, board) || !solve(board)) {
+                alert('Unsolvable!');
+            } else {
+                fillGrid(cells, board);
+            }
+        });
+
+        function extractNumbers(cells, board) {
+            for (let r = 0; r < 9; r++) {
+                board[r] = [];
+                for (let c = 0; c < 9; c++) {
+                    const value = cells[r][c].value;
+                    board[r][c] = value === '' ? 0 : parseInt(value);
+                }
+            }
+            return true;
+        }
+
+        function fillGrid(cells, board) {
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    if (cells[r][c].value === '') {
+                        cells[r][c].value = board[r][c];
+                        cells[r][c].classList.add('filled');
+                    }
+                }
+            }
+        }
+
+        function solve(board) {
+            for (let r = 0; r < 9; r++) {
+                for (let c = 0; c < 9; c++) {
+                    if (board[r][c] === 0) {
+                        for (let num = 1; num <= 9; num++) {
+                            if (isSafe(board, r, c, num)) {
+                                board[r][c] = num;
+                                if (solve(board)) return true;
+                                board[r][c] = 0;
+                            }
+                        }
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+        function isSafe(board, r, c, num) {
+            for (let i = 0; i < 9; i++) {
+                if (board[r][i] === num || board[i][c] === num || 
+                    board[Math.floor(r / 3) * 3 + Math.floor(i / 3)][Math.floor(c / 3) * 3 + (i % 3)] === num) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>
